@@ -22,6 +22,8 @@ public class WorldSwitcher : MonoBehaviour
   public World currentWorld;
   private Vector3 _offset = Vector3.forward * 10;
 
+  public GUIText worldGuiText;
+
 	void Start ()
   {
     _previousFutureRoom = currentFutureRoom;
@@ -101,7 +103,7 @@ public class WorldSwitcher : MonoBehaviour
         if(switchTimer > 1)
         {
           curr.rotation = Quaternion.identity;
-
+          worldGuiText.text = currentWorld == World.FUTURE ? "pAst" : "futuRE";
           
           transform.position =
             (currentWorld == World.FUTURE ? currentPastRoom.position : currentFutureRoom.position) - _offset;
