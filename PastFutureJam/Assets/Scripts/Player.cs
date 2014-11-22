@@ -1,29 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class Player : MonoBehaviour {
 	
-    private Vector2 startPos;
-    private Vector2 endPos;
-    private float speed = 0.25f;
+    private Vector2 _startPos;
+    private Vector2 _endPos;
     private bool moving = false;
     private float time = 0f;
     public float walkTime = 0.5f;
 
 	
 	void Start () {
+
+        transform.position = new Vector2(Mathf.Ceil(transform.position.x), Mathf.Ceil(transform.position.y));
 	}
 	
 	void Update () {
 		
-		//CheckInput();
-		
-		if(moving) {
-			// pos is changed when there's input from the player
-            Vector2 curPos = transform.position;
+    	if(moving) {
             time += Time.deltaTime;
 
-			transform.position = Vector2.Lerp(startPos, endPos, time/walkTime);
+			transform.position = Vector2.Lerp(_startPos, _endPos, time/walkTime);
             if (time >= walkTime)
             {
                 moving = false;
@@ -38,10 +36,9 @@ public class Player : MonoBehaviour {
 	
 	private void CheckInput() {
 		float moveX = Input.GetAxisRaw ("Horizontal");
-
 		if (moveX != 0){
-            startPos = transform.position;
-			endPos = startPos + Vector2.right * moveX;
+            _startPos = transform.position;
+			_endPos = _startPos + Vector2.right * moveX;
 			moving = true;
             time = 0;
 		}
@@ -49,11 +46,26 @@ public class Player : MonoBehaviour {
 		float moveY = Input.GetAxisRaw ("Vertical");
 		
 		if (moveY != 0){
-            startPos = transform.position;
-            endPos = startPos + Vector2.up * moveY;
+            _startPos = transform.position;
+            _endPos = _startPos + Vector2.up * moveY;
 			moving = true;
             time = 0;
 		}
 
+        if (collides(_endPos))
+            moving = false;
+
 	}
+
+    private bool collides(Vector2 tile)
+    {
+        Vector2[] tileList = new Vector2[] { new Vector2(-1, 0), new Vector2(-1, 1), new Vector2(-1, -1) };
+        foreach (Vector2 element in tileList)
+        {
+            if (tile == element)
+                return true;
+            
+        }
+        return false;
+    }
 }
