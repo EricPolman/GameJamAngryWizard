@@ -42,19 +42,19 @@ public class WorldSwitcher : MonoBehaviour
         {
           SwitchWorld();
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
           SwitchRoom(Direction.UP);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
           SwitchRoom(Direction.DOWN);
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
           SwitchRoom(Direction.LEFT);
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
           SwitchRoom(Direction.RIGHT);
         }
@@ -162,5 +162,10 @@ public class WorldSwitcher : MonoBehaviour
       }
       state = State.SWITCHING_ROOM;
     }
+  }
+
+  public Transform GetCurrentRoom()
+  {
+    return currentWorld == World.PAST ? currentPastRoom : currentFutureRoom;
   }
 }
