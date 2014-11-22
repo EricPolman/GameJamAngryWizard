@@ -17,16 +17,19 @@ public class WorldSwitcher : MonoBehaviour
 
   public State state = State.IDLE;
   private float switchTimer = 0;
+  private float secondSwitchTimer = 0;
 
   public World currentWorld;
-  private Vector3 _offset = Vector3.forward * 10 + Vector3.right * 0.5f + Vector3.up * 0.5f;
+  private Vector3 _offset = Vector3.forward * 10;
+
+  public GUIText worldGuiText;
 
 	void Start ()
   {
     _previousFutureRoom = currentFutureRoom;
     _previousPastRoom = currentPastRoom;
-    transform.position = 
-      currentWorld == World.PAST ? pastStartPoint.position : futureStartPoint.position;
+    transform.position =
+      currentWorld == World.PAST ? currentPastRoom.position : currentFutureRoom.position;
     transform.position -= _offset;
 	}
 	
@@ -85,17 +88,43 @@ public class WorldSwitcher : MonoBehaviour
         }
         break;
       case State.SWITCHING_WORLD:
+        Transform curr = null;
+        if (currentWorld == World.PAST)
+        {
+          curr = currentPastRoom;
+        }
+        else
+        {
+          curr = currentFutureRoom;
+        }
+
+        switchTimer += Time.deltaTime;
+        curr.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.Euler(90, 0, 0), switchTimer);
+        if(switchTimer > 1)
+        {
+          curr.rotation = Quaternion.identity;
+          worldGuiText.text = currentWorld == World.FUTURE ? "pAst" : "futuRE";
+          
+          transform.position =
+            (currentWorld == World.FUTURE ? currentPastRoom.position : currentFutureRoom.position) - _offset;
+
+          Transform newTransform = currentWorld == World.FUTURE ? currentPastRoom : currentFutureRoom;
+          newTransform.rotation = Quaternion.Lerp(Quaternion.Euler(90, 0, 0), Quaternion.identity, switchTimer - 1.0f);
+          if (switchTimer >= 2.0f)
+          {
+            newTransform.rotation = Quaternion.identity;
+            currentWorld = currentWorld == World.PAST ? World.FUTURE : World.PAST;
+            state = State.IDLE;
+            switchTimer = 0;
+          }
+        }
         break;
     }
 	}
 
   void SwitchWorld()
   {
-    currentWorld = currentWorld == World.PAST ? World.FUTURE : World.PAST;
-
-    transform.position =
-      currentWorld == World.PAST ? currentPastRoom.position : currentFutureRoom.position;
-    transform.position -= Vector3.forward * 10 + Vector3.right * 0.5f + Vector3.up * 0.5f;
+    state = State.SWITCHING_WORLD;
   }
 
   void SwitchRoom(Direction dir)
